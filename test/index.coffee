@@ -7,6 +7,22 @@ describe 'index section', ()->
     default_bg = mod()
     return
   
+  it 'with custom options_ok', ()->
+    bg = mod({
+      block_mixin_list : [(athis)->
+        athis.prototype.some_list = []
+        return
+      ]
+      block_mixin_constructor_list : [(athis)->
+        athis.some_list = []
+        return
+      ]
+    })
+    bl1 = new bg.Block
+    
+    assert bl1.some_list?
+    return
+  
   describe 'default_constructor', ()->
     default_bg = mod()
     
