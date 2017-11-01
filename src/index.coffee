@@ -93,8 +93,9 @@ module.exports = (build_opt={})->
     
     require_phase : (is_root = true)->
       @require_fn.call @
-      for endpoint, list of @require_endpoint_hash
-        perr "WARNING unresolved endpoint #{endpoint} #{JSON.stringify list}"
+      if is_root
+        for endpoint, list of @require_endpoint_hash
+          perr "WARNING unresolved endpoint #{endpoint} #{JSON.stringify list}"
       return
     
     # replaceable
