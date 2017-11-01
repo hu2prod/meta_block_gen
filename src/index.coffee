@@ -59,22 +59,24 @@ module.exports = (build_opt={})->
     
     # may be replaceable
     require_fn : ()->
+      col = @parent_block_blueprint.parent_collection
+      
       need_more = true
       while need_more
         need_more = false
         present_hash = {}
         for child in @child_list
-          child.require()
+          child.require_phase(false)
           present_hash[child.name] = true
-        
-        col = @parent_block_blueprint.parent_collection
         
         for child in @child_list
           require_list = []
-          if target = child.require_endpoint_hash.parent
-            require_list.uappend target
-          if target = child.require_endpoint_hash[@name]
-            require_list.uappend target
+          for endpoint, list of child.require_endpoint_hash
+            if endpoint in ['parent', @name]
+              require_list.uappend target
+            else
+              @require_endpoint_hash[endpoint] ?= []
+              @require_endpoint_hash[endpoint].uappend target
           
           for module in require_list
             continue if present_hash[module]
@@ -84,12 +86,15 @@ module.exports = (build_opt={})->
       
       return
     
-    require : (name = '', endpoint = 'parent')->
-      if name
-        @require_endpoint_hash[endpoint] ?= []
-        @require_endpoint_hash[endpoint].upush name
-        return
+    require : (name, endpoint = 'parent')->
+      @require_endpoint_hash[endpoint] ?= []
+      @require_endpoint_hash[endpoint].upush name
+      return
+    
+    require_phase : (is_root = true)->
       @require_fn.call @
+      for endpoint, list of @require_endpoint_hash
+        perr "WARNING unresolved endpoint #{endpoint} #{JSON.stringify list}"
       return
     
     # replaceable
