@@ -39,6 +39,7 @@ module.exports = (build_opt={})->
     
     child_list: [] # for nested Blocks
     body_list : [] # for code
+    require_endpoint_hash : {}
     
     for mixin in build_opt.block_mixin_list
       mixin @
@@ -50,9 +51,46 @@ module.exports = (build_opt={})->
       
       @child_list = []
       @body_list  = []
+      
+      @require_endpoint_hash = {}
     
     debug_name : ()->
       "#{@name}@#{@parent_block_blueprint.name}"
+    
+    # may be replaceable
+    require_fn : ()->
+      need_more = true
+      while need_more
+        need_more = false
+        present_hash = {}
+        for child in @child_list
+          child.require()
+          present_hash[child.name] = true
+        
+        col = @parent_block_blueprint.parent_collection
+        
+        for child in @child_list
+          require_list = []
+          if target = child.require_endpoint_hash.parent
+            require_list.uappend target
+          if target = child.require_endpoint_hash[@name]
+            require_list.uappend target
+          
+          for module in require_list
+            continue if present_hash[module]
+            need_more = true
+            @inject ()->
+              col.gen module
+      
+      return
+    
+    require : (name = '', endpoint = 'parent')->
+      if name
+        @require_endpoint_hash[endpoint] ?= []
+        @require_endpoint_hash[endpoint].upush name
+        return
+      @require_fn.call @
+      return
     
     # replaceable
     compile_fn : ()->
@@ -86,6 +124,7 @@ module.exports = (build_opt={})->
   
   # ###################################################################################################
   class mod.Block_blueprint
+    parent_collection : null
     name : ''
     regex: null
     param_hash : {}
@@ -153,6 +192,7 @@ module.exports = (build_opt={})->
     
     autogen : (name, regex, fn)->
       @generator_list.push bp = new mod.Block_blueprint
+      bp.parent_collection = @
       bp.name  = name
       bp.regex = regex
       bp.generator = fn
