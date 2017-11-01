@@ -69,21 +69,21 @@ module.exports = (build_opt={})->
           child.require_phase(false)
           present_hash[child.name] = true
         
+        require_list = []
         for child in @child_list
-          require_list = []
           for endpoint, list of child.require_endpoint_hash
             if endpoint in ['parent', @name]
-              require_list.uappend target
+              require_list.uappend list
             else
               @require_endpoint_hash[endpoint] ?= []
-              @require_endpoint_hash[endpoint].uappend target
-          
-          for module in require_list
-            continue if present_hash[module]
-            need_more = true
-            @inject ()->
-              col.gen module
-      
+              @require_endpoint_hash[endpoint].uappend list
+        
+        for module in require_list
+          continue if present_hash[module]
+          need_more = true
+          @inject ()->
+            col.gen module
+    
       return
     
     require : (name, endpoint = 'parent')->
