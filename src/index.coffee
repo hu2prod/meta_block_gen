@@ -39,6 +39,7 @@ module.exports = (build_opt={})->
     
     child_list: [] # for nested Blocks
     body_list : [] # for code
+    require_endpoint_hash : {}
     
     for mixin in build_opt.block_mixin_list
       mixin @
@@ -50,9 +51,52 @@ module.exports = (build_opt={})->
       
       @child_list = []
       @body_list  = []
+      
+      @require_endpoint_hash = {}
     
     debug_name : ()->
       "#{@name}@#{@parent_block_blueprint.name}"
+    
+    # may be replaceable
+    require_fn : ()->
+      col = @parent_block_blueprint.parent_collection
+      
+      need_more = true
+      while need_more
+        need_more = false
+        present_hash = {}
+        for child in @child_list
+          child.require_phase(false)
+          present_hash[child.name] = true
+        
+        require_list = []
+        for child in @child_list
+          for endpoint, list of child.require_endpoint_hash
+            if endpoint in ['parent', @name]
+              require_list.uappend list
+            else
+              @require_endpoint_hash[endpoint] ?= []
+              @require_endpoint_hash[endpoint].uappend list
+        
+        for module in require_list
+          continue if present_hash[module]
+          need_more = true
+          @inject ()->
+            col.gen module
+    
+      return
+    
+    require : (name, endpoint = 'parent')->
+      @require_endpoint_hash[endpoint] ?= []
+      @require_endpoint_hash[endpoint].upush name
+      return
+    
+    require_phase : (is_root = true)->
+      @require_fn.call @
+      if is_root
+        for endpoint, list of @require_endpoint_hash
+          perr "WARNING unresolved endpoint #{endpoint} #{JSON.stringify list}"
+      return
     
     # replaceable
     compile_fn : ()->
@@ -86,6 +130,7 @@ module.exports = (build_opt={})->
   
   # ###################################################################################################
   class mod.Block_blueprint
+    parent_collection : null
     name : ''
     regex: null
     param_hash : {}
@@ -152,7 +197,11 @@ module.exports = (build_opt={})->
       ret()
     
     autogen : (name, regex, fn)->
+      if !fn
+        fn = regex
+        regex = new RegExp "^#{name}$"
       @generator_list.push bp = new mod.Block_blueprint
+      bp.parent_collection = @
       bp.name  = name
       bp.regex = regex
       bp.generator = fn
