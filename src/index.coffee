@@ -1,4 +1,5 @@
 require 'fy'
+require 'fy/codegen'
 require 'fy/experimental'
 
 module.exports = (build_opt={})->
@@ -127,6 +128,18 @@ module.exports = (build_opt={})->
       fn()
       mod._gen_end @
       return
+    
+    # pretty print
+    pp : ()->
+      walk = (mod)->
+        if mod.child_list.length
+          """
+          #{mod.name}
+            #{join_list mod.child_list.map(walk), '  '}
+          """
+        else
+          "#{mod.name}"
+      walk @
   
   # ###################################################################################################
   class mod.Block_blueprint
