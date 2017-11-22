@@ -11,7 +11,7 @@ module.exports = (col)->
   # ###################################################################################################
   #    coffee_gen
   # ###################################################################################################
-  bp = col.autogen 'coffee_gen', (ret)->
+  bp = col.autogen 'sample_coffee_gen', (ret)->
     zh = ret.zh = new Zone_holder
     zg = zh.hash.zg = new Zone ret.name
     ret.compile_fn = ()->
@@ -45,7 +45,7 @@ module.exports = (col)->
   # ###################################################################################################
   #    raw_code
   # ###################################################################################################
-  bp = col.autogen 'raw_code', (ret)->
+  bp = col.autogen 'sample_raw_code', (ret)->
     zh = ret.zh = new Zone_holder
     zg = zh.hash.zg = new Zone ret.name
     ret.compile_fn = ()->
