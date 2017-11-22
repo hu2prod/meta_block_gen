@@ -12,9 +12,8 @@ module.exports = (col)->
   #    coffee_gen
   # ###################################################################################################
   bp = col.autogen 'coffee_gen', (ret)->
-    # isolated zh
-    _zh = ret._zh = new Zone_holder
-    zg = _zh.hash.zg = new Zone ret.name
+    zh = ret.zh = new Zone_holder
+    zg = zh.hash.zg = new Zone ret.name
     ret.compile_fn = ()->
       if !@hash._injected
         throw new Error "Can't compile #{@name}. Must be injected"
@@ -28,9 +27,9 @@ module.exports = (col)->
         v.compile()
       
       for v in @child_list
-        _zh.append v.zh if v.zh
+        zh.append v.zh if v.zh
       
-      _zh.actualize()
+      zh.actualize()
       # ###################################################################################################
       @inject ()=>
         file = col.gen 'file_gen'
