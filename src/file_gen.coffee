@@ -14,6 +14,8 @@ module.exports = (col)->
       if !@hash.cont?
         throw new Error "Can't compile #{@name}. No hash.cont"
       fs.writeFileSync @hash.file, @hash.cont
+      if @hash.executable
+        chmod "+x", @hash.file
       return
     ret
   # ###################################################################################################

@@ -1,4 +1,5 @@
 assert = require 'assert'
+require 'shelljs/global'
 
 mod = require('../src/index.coffee')()
 col = new mod.Block_blueprint_collection
@@ -30,6 +31,8 @@ describe 'coffee_gen section', ()->
       # END Scope raw_code
       
       """
+      res = exec './tmp/file.coffee'
+      assert res.stdout, 'Hello World'
       rm fg.hash.file
     
     describe 'throws', ()->

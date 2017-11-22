@@ -35,6 +35,7 @@ module.exports = (col)->
       @inject ()=>
         file = col.gen 'file_gen'
         file.hash.file = @hash.file
+        file.hash.executable = true
         file.hash.cont = """
           #!/usr/bin/env iced
           #{zg.gen()}
