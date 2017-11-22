@@ -55,6 +55,10 @@ class @Zone_holder
     @delayed_list = []
     @hash = {}
   
+  get_parent : ()->
+    return @ if !@parent
+    @parent.get_parent()
+  
   append : (zh)->
     unless zh instanceof module.Zone_holder
       p zh
