@@ -10,9 +10,9 @@ module.exports = (col)->
   bp = col.autogen 'file_gen', /^file_gen$/, (ret)->
     ret.flush_fn = ()->
       if !@hash.file?
-        throw new Error "Can't compile file_gen. No hash.file"
+        throw new Error "Can't compile #{@name}. No hash.file"
       if !@hash.cont?
-        throw new Error "Can't compile file_gen. No hash.cont"
+        throw new Error "Can't compile #{@name}. No hash.cont"
       fs.writeFileSync @hash.file, @hash.cont
       return
     ret
@@ -23,9 +23,9 @@ module.exports = (col)->
     fg = col.gen 'file_gen'
     ret.flush_fn = ()->
       if !@hash.file?
-        throw new Error "Can't compile template_gen. No hash.file"
+        throw new Error "Can't compile #{@name}. No hash.file"
       if !@hash.cont?
-        throw new Error "Can't compile template_gen. No hash.cont"
+        throw new Error "Can't compile #{@name}. No hash.cont"
       template = @hash.cont
       for k,v of @hash
         template = template.split("$#{k}$").join(v)
@@ -43,14 +43,14 @@ module.exports = (col)->
   bp = col.autogen 'path_wrap', /^path_wrap$/, (ret)->
     ret.compile_fn = ()->
       if !@hash._injected
-        throw new Error "Can't compile path_wrap. Must be injected"
+        throw new Error "Can't compile #{@name}. Must be injected"
       for child in @child_list
         child.compile()
       return
       
     ret.flush_fn = ()->
       if !@hash.path?
-        throw new Error "Can't compile path_wrap. No hash.path"
+        throw new Error "Can't compile #{@name}. No hash.path"
       mkdir '-p', @hash.path
       
       _path = @hash.path

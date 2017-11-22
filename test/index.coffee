@@ -200,6 +200,7 @@ describe 'index section', ()->
       ext_module()
       
       bl1 = col.gen 'test'
+      bl1.require_phase()
       bl1.compile()
       assert.equal bl1.body_list.length, 1
     
