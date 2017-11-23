@@ -26,16 +26,26 @@ class @Zone
     t_zone.parent = @
     return
   
+  get_full_scope_path : ()->
+    list = [@scope]
+    parent = @parent
+    while parent
+      list.push parent.scope if parent.scope
+      parent = parent.parent
+    list.reverse()
+    list.join "/"
+  
   gen : ()->
     ret = []
     if @code_list.length
-      ret.push "# Scope #{@scope}"
+      scope = @get_full_scope_path()
+      ret.push "# Scope #{scope}"
       for v in @code_list
         if typeof v == 'function'
           ret.push v()
         else
           ret.push v
-      ret.push "# END Scope #{@scope}"
+      ret.push "# END Scope #{scope}"
       ret.push ""
     for child in @child_list
       if code = child.gen()

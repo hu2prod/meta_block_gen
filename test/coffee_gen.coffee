@@ -26,9 +26,9 @@ describe 'coffee_gen section', ()->
       assert fs.existsSync fg.hash.file
       assert.equal fs.readFileSync(fg.hash.file, 'utf-8'), """
       #!/usr/bin/env iced
-      # Scope sample_raw_code
+      # Scope sample_coffee_gen/sample_raw_code
       console.log 'Hello World'
-      # END Scope sample_raw_code
+      # END Scope sample_coffee_gen/sample_raw_code
       
       """
       res = exec './tmp/file.coffee'

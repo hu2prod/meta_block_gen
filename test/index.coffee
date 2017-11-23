@@ -64,6 +64,26 @@ describe 'index section', ()->
       col.gen 'test'
       return
     
+    it 'autogen easier syntax', ()->
+      col = new default_bg.Block_blueprint_collection
+      col.autogen 'test_wtf', (ret)->
+        ret
+      
+      col.autogen 'test', (ret)->
+        ret
+      col.gen 'test'
+      return
+    
+    it 'autogen easier syntax comment', ()->
+      col = new default_bg.Block_blueprint_collection
+      col.autogen 'test_wtf', (ret)->
+        ret
+      
+      col.autogen 'test', (ret)->
+        ret
+      col.gen 'test:comment'
+      return
+    
     it 'autogen right select validator', ()->
       col = new default_bg.Block_blueprint_collection
       ag_block = col.autogen 'test_wtf', /^test*$/, (ret)->

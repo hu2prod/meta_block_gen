@@ -212,7 +212,7 @@ module.exports = (build_opt={})->
     autogen : (name, regex, fn)->
       if !fn
         fn = regex
-        regex = new RegExp "^#{name}$"
+        regex = new RegExp "^#{name}(:.*)?$"
       @generator_list.push bp = new mod.Block_blueprint
       bp.parent_collection = @
       bp.name  = name
