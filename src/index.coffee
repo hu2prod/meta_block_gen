@@ -13,16 +13,15 @@ module.exports = (build_opt={})->
   mod._block_stack = []
 
   mod._gen_start = (block)->
-    last_block = block
     if parent = mod._block_stack.last()
-      block.parent_block = parent
-      parent.child_list.upush block
+      if !block.parent_block # КОСТЫЛЬ
+        block.parent_block = parent
+        parent.child_list.upush block
     
     mod._block_stack.push block
     return
 
   mod._gen_end = (block)->
-    last_block = block
     if mod._block_stack.last() != block
       ### !pragma coverage-skip-block ###
       throw new Error "gen_end violation"
