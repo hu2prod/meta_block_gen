@@ -8,12 +8,23 @@ module.exports = (col)->
   #    file_gen
   # ###################################################################################################
   bp = col.autogen 'file_gen', /^file_gen$/, (ret)->
+    ret.hash.force_rewrite = false
     ret.flush_fn = ()->
       if !@hash.file?
         throw new Error "Can't compile #{@name}. No hash.file"
       if !@hash.cont?
         throw new Error "Can't compile #{@name}. No hash.cont"
-      fs.writeFileSync @hash.file, @hash.cont
+      skip = false
+      if exists = fs.existsSync @hash.file
+        if @hash.cont == fs.readFileSync @hash.file, 'utf-8'
+          puts "[SKIP   ] #{@hash.file} same content"
+          skip = true
+      if !skip or ret.hash.force_rewrite
+        fs.writeFileSync @hash.file, @hash.cont
+        if exists
+          puts "[REWRITE] #{@hash.file}"
+        else
+          puts "[WRITE  ] #{@hash.file}"
       if @hash.executable
         chmod "+x", @hash.file
       return
